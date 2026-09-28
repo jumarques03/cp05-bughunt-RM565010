@@ -24,4 +24,14 @@ public class AtendimentoTest {
         // Act + Assert: atendimento ja realizado nao pode ser cancelado
         assertThrows(StatusInvalidoException.class, atendimento::cancelar);
     }
+
+    @Test
+    public void deveRecusarCancelamentoQuandoAtendimentoJaCancelado() {
+        // Arrange
+        Banho atendimento = banhoAgendado();
+        atendimento.cancelar();
+
+        // Act + Assert: cancelar duas vezes nao e permitido
+        assertThrows(StatusInvalidoException.class, atendimento::cancelar);
+    }
 }
