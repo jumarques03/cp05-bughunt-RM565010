@@ -42,7 +42,7 @@ public class AgendaService {
         for (Atendimento existente : doPet) {
             if (existente.getPetNome().equals(novo.getPetNome())
                     && existente.getDataHora().equals(novo.getDataHora())
-                    && "AGENDADO".equals(existente.getStatus())) {
+                    && Atendimento.STATUS_AGENDADO.equals(existente.getStatus())) {
                 throw new HorarioOcupadoException(
                         "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
             }
