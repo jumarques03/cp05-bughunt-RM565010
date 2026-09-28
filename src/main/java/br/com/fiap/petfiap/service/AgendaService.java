@@ -23,21 +23,30 @@ public class AgendaService {
 
     // Agenda um novo atendimento: recusa data/hora no passado e horario ja ocupado pelo mesmo pet.
     public Atendimento agendar(Atendimento novo) {
-        if (novo.getDataHora().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Nao e possivel agendar em data/hora no passado");
-        }
-        List<Atendimento> doPet = repository.findByPetNome(novo.getPetNome());
-        for (Atendimento a : doPet) {
-            if (a.getPetNome().equals(novo.getPetNome()) && a.getDataHora().equals(novo.getDataHora())
-                    && "AGENDADO".equals(a.getStatus())) {
-                throw new HorarioOcupadoException(
-                        "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
-            }
-        }
+        validarDataHoraFutura(novo);
+        validarHorarioLivre(novo);
         Atendimento salvo = repository.save(novo);
         log.info("Recibo: atendimento {} agendado para {} (tutor {})",
                 salvo.getProtocolo(), salvo.getPetNome(), salvo.getTutorNome());
         return salvo;
+    }
+
+    private void validarDataHoraFutura(Atendimento novo) {
+        if (novo.getDataHora().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Nao e possivel agendar em data/hora no passado");
+        }
+    }
+
+    private void validarHorarioLivre(Atendimento novo) {
+        List<Atendimento> doPet = repository.findByPetNome(novo.getPetNome());
+        for (Atendimento existente : doPet) {
+            if (existente.getPetNome().equals(novo.getPetNome())
+                    && existente.getDataHora().equals(novo.getDataHora())
+                    && "AGENDADO".equals(existente.getStatus())) {
+                throw new HorarioOcupadoException(
+                        "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
+            }
+        }
     }
 
     // Busca pelo id; nunca retorna null, o orElseThrow garante a excecao.
