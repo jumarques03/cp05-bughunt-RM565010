@@ -37,11 +37,11 @@ public class AgendaService {
         }
     }
 
+    // findByPetNome ja filtra por pet, entao aqui so falta comparar data/hora e status.
     private void validarHorarioLivre(Atendimento novo) {
         List<Atendimento> doPet = repository.findByPetNome(novo.getPetNome());
         for (Atendimento existente : doPet) {
-            if (existente.getPetNome().equals(novo.getPetNome())
-                    && existente.getDataHora().equals(novo.getDataHora())
+            if (existente.getDataHora().equals(novo.getDataHora())
                     && Atendimento.STATUS_AGENDADO.equals(existente.getStatus())) {
                 throw new HorarioOcupadoException(
                         "Pet " + novo.getPetNome() + " ja possui atendimento agendado nesse horario");
